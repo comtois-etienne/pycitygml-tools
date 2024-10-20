@@ -5,47 +5,77 @@ def __exec():
     from . import __executable
     return __executable
 
-def __run(command: str, verbose: bool = False):
+def __run(command: str, verbose: bool = False) -> str:
     """
     Run a command in a subprocess
     """
-    out = subprocess.check_output(command, shell=True)
-    if verbose: print(out.decode('utf-8'))
+    try:
+        out = subprocess.check_output(command, shell=True)
+        out = out.decode('utf-8')
+        if verbose: print(out)
+        return out
+    except subprocess.CalledProcessError as e:
+        print(e.output)
 
-def list_to_str(lst: list):
+def __list_to_str(lst: list | str) -> str:
     """
     ['a', 'b', 'c'] -> "a" "b" "c"
     """
-    return ' '.join([f'"{x}"' for x in lst])
+    if isinstance(lst, list):
+        return ' '.join([f'"{x}"' for x in lst])
+    return lst
 
-def help():
+def __get_lines_containing(lines: str, line_content: str) -> None | str | list[str]:
+    """
+    :param lines: a string containing multiple lines separated by '\n'
+    :param line_content: a string to search in each line
+    :return: a list of what is after line_content in each line
+    """
+    lines = lines.split('\n')
+    lines = [line for line in lines if line_content in line]
+    lines = [line.split(line_content)[1] for line in lines]
+    lines = [line.strip() for line in lines]
+    lines = [line[:-1] for line in lines]
+    lines = None if len(lines) == 0 else lines
+    lines = lines[0] if len(lines) == 1 else lines
+    return lines
+
+def help() -> str:
     """
     ./citygml-tools --help
     """
     command = f"{__exec()} --help"
-    __run(command, verbose=True)
+    return __run(command, verbose=False)
 
-def version():
+def version() -> str:
     """
     ./citygml-tools --version
     """
     command = f"{__exec()} --version"
-    __run(command, verbose=True)
+    return __run(command, verbose=False)
 
-def stats(citygml_path: str):
+def stats(citygml_path: str | list[str], verbose=False) -> None | str | list[str]:
     """
     ./citygml-tools stats file.gml
+    :param citygml_path: the path to the citygml file
+    :param verbose: print the process output
+    :return: the path to the statistics file
     """
+    process_str = "Writing statistics as JSON report to file"
+    citygml_path = __list_to_str(citygml_path)
     command = f"{__exec()} stats {citygml_path}"
-    __run(command, verbose=True)
+    lines = __run(command, verbose)
+    return __get_lines_containing(lines, process_str)
 
-def validate(citygml_path: str, verbose: bool = False):
+# todo : not working
+def validate(citygml_path: str | list[str], verbose: bool = False):
     """
     ./citygml-tools validate file.gml
     """
     command = f"{__exec()} validate {citygml_path}"
-    __run(command, verbose)
+    return __run(command, verbose)
 
+# todo
 def apply_xslt(citygml_path: str, xslt_path: str, verbose: bool = False):
     """
     ./citygml-tools apply-xslt file.gml stylesheet.xsl
@@ -53,6 +83,7 @@ def apply_xslt(citygml_path: str, xslt_path: str, verbose: bool = False):
     command = f"{__exec()} apply-xslt {citygml_path} {xslt_path}"
     __run(command, verbose)
 
+# todo
 def change_height(citygml_path: str, offset: float, verbose: bool = False):
     """
     ./citygml-tools change-height file.gml 10
@@ -60,13 +91,17 @@ def change_height(citygml_path: str, offset: float, verbose: bool = False):
     command = f"{__exec()} change-height {citygml_path} {offset}"
     __run(command, verbose)
 
-def remove_appereance(citygml_path: str, verbose: bool = False):
+def remove_appearances(citygml_path: str | list[str], verbose: bool = False) -> None | str | list[str]:
     """
     ./citygml-tools remove-apps file.gml
     """
+    process_str = "Writing output to file"
+    citygml_path = __list_to_str(citygml_path)
     command = f"{__exec()} remove-apps {citygml_path}"
-    __run(command, verbose)
+    lines = __run(command, verbose)
+    return __get_lines_containing(lines, process_str)
 
+# todo
 def to_local_appearances(citygml_path: str):
     """
     ./citygml-tools to-local-apps file.gml
@@ -74,17 +109,22 @@ def to_local_appearances(citygml_path: str):
     #todo: implement
     print("Not implemented yet")
 
-def clip_textures(citygml_path: str, verbose: bool = False):
+def clip_textures(citygml_path: str | list[str], verbose: bool = False) -> None | str | list[str]:
     """
     ./citygml-tools clip-textures file.gml
     """
+    process_str = 'Writing output to file'
+    citygml_path = __list_to_str(citygml_path)
     command = f"{__exec()} clip-textures {citygml_path}"
-    __run(command, verbose)
+    lines = __run(command, verbose)
+    return __get_lines_containing(lines, process_str)
 
+# todo
 def subset():
     # todo: implement
     print("Not implemented yet")
 
+# todo
 def filter_lods(citygml_path: str, lod: str, verbose: bool = False):
     """
     ./citygml-tools filter-lods file.gml 2
@@ -92,6 +132,7 @@ def filter_lods(citygml_path: str, lod: str, verbose: bool = False):
     command = f"{__exec()} filter-lods {citygml_path} {lod}"
     __run(command, verbose)
 
+# todo
 def reproject(citygml_path: str, epsg: int, verbose: bool = False):
     """
     ./citygml-tools reproject file.gml 4326
@@ -99,6 +140,7 @@ def reproject(citygml_path: str, epsg: int, verbose: bool = False):
     command = f"{__exec()} reproject {citygml_path} {epsg}"
     __run(command, verbose)
 
+# todo
 def json_to_gml(cityjson_path: str, verbose: bool = False):
     """
     ./citygml-tools from-cityjson file.city.json
@@ -106,15 +148,17 @@ def json_to_gml(cityjson_path: str, verbose: bool = False):
     command = f"{__exec()} from-cityjson {cityjson_path}"
     __run(command, verbose)
 
-def gml_to_json(citygml_path: str | list, verbose: bool = False):
+def gml_to_json(citygml_path: str | list[str], verbose: bool = False) -> None | str | list[str]:
     """
     ./citygml-tools  to-cityjson file.gml
     """
-    if isinstance(citygml_path, list):
-        citygml_path = list_to_str(citygml_path)
+    process_str = 'Writing output to file'
+    citygml_path = __list_to_str(citygml_path)
     command = f"{__exec()} to-cityjson {citygml_path}"
-    __run(command, verbose)
+    lines = __run(command, verbose)
+    return __get_lines_containing(lines, process_str)
 
+# todo
 def upgrade_3(citygml_path: str, verbose: bool = False):
     """
     ./citygml-tools upgrade-3 file.gml
