@@ -67,29 +67,26 @@ def stats(citygml_path: str | list[str], verbose=False) -> None | str | list[str
     lines = __run(command, verbose)
     return __get_lines_containing(lines, process_str)
 
-# todo : not working
+# todo
 def validate(citygml_path: str | list[str], verbose: bool = False):
     """
     ./citygml-tools validate file.gml
     """
-    command = f"{__exec()} validate {citygml_path}"
-    return __run(command, verbose)
+    pass
 
 # todo
 def apply_xslt(citygml_path: str, xslt_path: str, verbose: bool = False):
     """
     ./citygml-tools apply-xslt file.gml stylesheet.xsl
     """
-    command = f"{__exec()} apply-xslt {citygml_path} {xslt_path}"
-    __run(command, verbose)
+    pass
 
 # todo
 def change_height(citygml_path: str, offset: float, verbose: bool = False):
     """
     ./citygml-tools change-height file.gml 10
     """
-    command = f"{__exec()} change-height {citygml_path} {offset}"
-    __run(command, verbose)
+    pass
 
 def remove_appearances(citygml_path: str | list[str], verbose: bool = False) -> None | str | list[str]:
     """
@@ -107,7 +104,7 @@ def to_local_appearances(citygml_path: str):
     ./citygml-tools to-local-apps file.gml
     """
     #todo: implement
-    print("Not implemented yet")
+    pass
 
 def clip_textures(citygml_path: str | list[str], verbose: bool = False) -> None | str | list[str]:
     """
@@ -122,31 +119,28 @@ def clip_textures(citygml_path: str | list[str], verbose: bool = False) -> None 
 # todo
 def subset():
     # todo: implement
-    print("Not implemented yet")
+    pass
 
 # todo
 def filter_lods(citygml_path: str, lod: str, verbose: bool = False):
     """
     ./citygml-tools filter-lods file.gml 2
     """
-    command = f"{__exec()} filter-lods {citygml_path} {lod}"
-    __run(command, verbose)
+    pass
 
 # todo
-def reproject(citygml_path: str, epsg: int, verbose: bool = False):
+def reproject(citygml_path: str | list[str], epsg: int, verbose: bool = False) -> None | str | list[str]:
     """
     ./citygml-tools reproject file.gml 4326
     """
-    command = f"{__exec()} reproject {citygml_path} {epsg}"
-    __run(command, verbose)
+    pass
 
 # todo
 def json_to_gml(cityjson_path: str, verbose: bool = False):
     """
     ./citygml-tools from-cityjson file.city.json
     """
-    command = f"{__exec()} from-cityjson {cityjson_path}"
-    __run(command, verbose)
+    pass
 
 def gml_to_json(citygml_path: str | list[str], verbose: bool = False) -> None | str | list[str]:
     """
@@ -163,5 +157,4 @@ def upgrade_3(citygml_path: str, verbose: bool = False):
     """
     ./citygml-tools upgrade-3 file.gml
     """
-    command = f"{__exec()} upgrade-3 {citygml_path}"
-    __run(command, verbose)
+    pass
