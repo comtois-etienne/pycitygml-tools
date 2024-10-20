@@ -16,7 +16,8 @@ from .tools import (
     reproject,
     json_to_gml,
     gml_to_json,
-    upgrade_3
+    upgrade_3, 
+    rename,
 )
 
 
@@ -55,5 +56,6 @@ __all__ = [
     "reproject",
     "json_to_gml",
     "gml_to_json",
-    "upgrade_3"
+    "upgrade_3",
+    "rename",
 ]

@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 
 def __exec():
@@ -39,6 +40,23 @@ def __get_lines_containing(lines: str, line_content: str) -> None | str | list[s
     lines = None if len(lines) == 0 else lines
     lines = lines[0] if len(lines) == 1 else lines
     return lines
+
+def __get_extension(path: str) -> str:
+    """
+    Get the extension of a file
+    """
+    path = path.split('/')[-1]
+    return path.split('.')[-1] if '.' in path else None
+
+def __replace_extension(path: str, new_extension: str) -> str:
+    """
+    Replace the extension of a file
+    """
+    old_ext = __get_extension(path)
+    if old_ext is not None:
+        ext_len = len(old_ext) + 1
+        path = path[:-ext_len]
+    return path + '.' + new_extension
 
 def help() -> str:
     """
@@ -158,3 +176,27 @@ def upgrade_3(citygml_path: str, verbose: bool = False):
     ./citygml-tools upgrade-3 file.gml
     """
     pass
+
+def rename(citygml_path: str | list[str], new_name: str | list[str], extension: str | list[str] = None) -> str | list[str]:
+    """
+    :param citygml_path: the path to the citygml file (extension kept)
+    :param new_name: the new name of the file (extension ignored)
+    :return: the new name of the files
+    """
+    citygml_path = [citygml_path] if isinstance(citygml_path, str) else citygml_path
+    new_name = [new_name] if isinstance(new_name, str) else new_name
+
+    if extension is None:
+        extensions = [__get_extension(path) for path in citygml_path]
+    elif isinstance(extension, str):
+        extensions = [extension] * len(citygml_path)
+    else:
+        extensions = extension
+    extensions = [ext[1:] if ext[0] == '.' else ext for ext in extensions]
+    new_names = [__replace_extension(path, ext) for path, ext in zip(new_name, extensions)]
+
+    for old, new in zip(citygml_path, new_names):
+        os.rename(old, new)
+    
+    return new_names
+
