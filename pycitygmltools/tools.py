@@ -181,6 +181,7 @@ def rename(citygml_path: str | list[str], new_name: str | list[str], extension: 
     """
     :param citygml_path: the path to the citygml file (extension kept)
     :param new_name: the new name of the file (extension ignored)
+    :param extension: the new extension of the file
     :return: the new name of the files
     """
     citygml_path = [citygml_path] if isinstance(citygml_path, str) else citygml_path
